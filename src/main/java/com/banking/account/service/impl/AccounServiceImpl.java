@@ -4,6 +4,7 @@ import com.banking.account.constants.AccountsConstants;
 import com.banking.account.dto.CustomerDto;
 import com.banking.account.entity.Accounts;
 import com.banking.account.entity.Customer;
+import com.banking.account.exception.CustomerAlreadyExistException;
 import com.banking.account.mapper.CustomerMapper;
 import com.banking.account.repository.AccountsRepository;
 import com.banking.account.repository.CustomerRepository;
@@ -11,6 +12,8 @@ import com.banking.account.service.IAccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -23,6 +26,13 @@ public class AccounServiceImpl implements IAccountService {
     @Override
     public void createAccount(CustomerDto customerDto) {
       Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
+      Optional<Customer> optionalCustomer = customerRepository.findByMobileNumber(customer.getMobileNumber());
+      if(optionalCustomer.isPresent()){
+          throw new CustomerAlreadyExistException("Customer with mobile number " + customerDto.getMobileNumber() + " already exists");
+      }
+      customer.setCreatedAt(LocalDateTime.now());
+      customer.setCreatedBy("Anonymous");
+
       Customer savedCustomer = customerRepository.save(customer);
       accountsRepository.save(createNewAccount(savedCustomer));
     }
@@ -39,6 +49,8 @@ public class AccounServiceImpl implements IAccountService {
       newAccounts.setAccountNumber(randomAccNumber);
       newAccounts.setAccountType(AccountsConstants.SAVINGS);
       newAccounts.setBranchAddress(AccountsConstants.ADDRESS);
+      newAccounts.setCreatedAt(LocalDateTime.now());
+      newAccounts.setCreatedBy("Anonymous");
 
       return newAccounts;
     }
