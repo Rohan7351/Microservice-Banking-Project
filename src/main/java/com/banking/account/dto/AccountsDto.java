@@ -3,7 +3,7 @@ package com.banking.account.dto;
 import lombok.Data;
 
 @Data
-public class AccountDto {
+public class AccountsDto {
     private Long accountNumber;
 
     private String accountType;
