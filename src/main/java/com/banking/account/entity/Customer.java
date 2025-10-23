@@ -1,5 +1,6 @@
 package com.banking.account.entity;
 
+import com.banking.account.dto.AccountsDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,5 +19,7 @@ public class Customer extends BaseEntity{
     private String email;
 
     private String mobileNumber;
+
+
 
 }
